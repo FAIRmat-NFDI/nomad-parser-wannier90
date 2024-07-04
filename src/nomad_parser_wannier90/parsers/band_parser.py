@@ -23,14 +23,14 @@ from structlog.stdlib import BoundLogger
 
 from nomad.parsing.file_parser import DataTextParser
 
-from nomad_simulations.schema.model_method import Wannier
-from nomad_simulations.schema.model_system import ModelSystem
-from nomad_simulations.schema.numerical_settings import (
+from nomad_simulations.schema_packages.model_method import Wannier
+from nomad_simulations.schema_packages.model_system import ModelSystem
+from nomad_simulations.schema_packages.numerical_settings import (
     KSpace,
     KLinePath as KLinePathSettings,
 )
-from nomad_simulations.schema.properties import ElectronicBandStructure
-from nomad_simulations.schema.variables import KLinePath
+from nomad_simulations.schema_packages.properties import ElectronicBandStructure
+from nomad_simulations.schema_packages.variables import KLinePath
 
 
 class Wannier90BandParser:
