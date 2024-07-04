@@ -1,0 +1,137 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: Apache Software License",
+]
+name = "nomad-parser-wannier90"
+description = "A NOMAD parser plugin for Wannier90 input/output files."
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Jose M. Pizarro", email = "jose.pizarro@physik.hu-berlin.de" },
+]
+maintainers = [
+    { name = "Jose M. Pizarro", email = "jose.pizarro@physik.hu-berlin.de" },
+]
+license = { file = "LICENSE" }
+dependencies = [
+    "nomad-lab>=1.3.0",
+    "nomad-schema-plugin-simulation-workflow@git+https://github.com/nomad-coe/nomad-schema-plugin-simulation-workflow.git@develop",
+    "nomad-schema-plugin-run@git+https://github.com/nomad-coe/nomad-schema-plugin-run.git@develop",
+    "nomad-simulations@git+https://github.com/nomad-coe/nomad-simulations.git@develop",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/FAIRmat-NFDI/nomad-parser-wannier90"
+"Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-parser-wannier90/issues"
+"Documentation" = "https://FAIRmat-NFDI.github.io/nomad-parser-wannier90/"
+
+[project.optional-dependencies]
+[project.optional-dependencies]
+dev = [
+    "mypy==1.0.1",
+    "ruff",
+    "pytest",
+    "pytest-timeout",
+    "pytest-cov",
+    "structlog"
+]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "W", # pycodestyle
+    "PL", # pylint
+]
+
+ignore = [
+    "E501", # Line too long ({width} > {limit} characters)
+    "E701", # Multiple statements on one line (colon)
+    "E731", # Do not assign a lambda expression, use a def
+    "E402",  # Module level import not at top of file
+    "PLR0911", # Too many return statements
+    "PLR0912", # Too many branches
+    "PLR0913", # Too many arguments in function definition
+    "PLR0915", # Too many statements
+    "PLR2004", # Magic value used instead of constant
+    "PLW0603", # Using the global statement
+    "PLW2901", # redefined-loop-name
+    "PLR1714", # consider-using-in
+    "PLR5501", # else-if-used
+]
+
+fixable = ["ALL"]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# this is entirely optional, you can remove this if you wish to
+[tool.ruff.format]
+# use single quotes for strings.
+quote-style = "single"
+
+# indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+write_to = "src/nomad_parser_wannier90/_version.py"
+
+[project.entry-points.'nomad.plugin']
+nomad_parser_wannier90_plugin = "nomad_parser_wannier90.parsers:nomad_parser_wannier90_plugin"
+nomad_parser_wannier90_schema = "nomad_parser_wannier90.schema_packages:nomad_parser_wannier90_schema"
+
+
+[tool.cruft]
+# Avoid updating workflow files, this leads to permissions issues
+skip = [".github/*"]

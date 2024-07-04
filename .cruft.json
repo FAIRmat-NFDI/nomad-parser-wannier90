@@ -1,0 +1,26 @@
+{
+  "template": "https://github.com/FAIRmat-NFDI/cookiecutter-nomad-plugin",
+  "commit": "c40010ce548126347c5fd7b36c2a5031bcd0b34b",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "full_name": "Jose M. Pizarro",
+      "email": "jose.pizarro@physik.hu-berlin.de",
+      "github_username": "JosePizarro3",
+      "plugin_name": "nomad-parser-wannier90",
+      "module_name": "nomad_parser_wannier90",
+      "short_description": "NOMAD parser plugin for Wannier90 input/output files.",
+      "version": "0.0.1",
+      "license": "Apache Software License 2.0",
+      "include_schema_package": true,
+      "include_normalizer": false,
+      "include_parser": true,
+      "include_app": false,
+      "_copy_without_render": [
+        "*.html"
+      ],
+      "_template": "https://github.com/FAIRmat-NFDI/cookiecutter-nomad-plugin"
+    }
+  },
+  "directory": null
+}
