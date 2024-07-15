@@ -17,15 +17,19 @@
 # limitations under the License.
 #
 
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
+
 import numpy as np
-from typing import Optional, Tuple
-from structlog.stdlib import BoundLogger
-
+from nomad.parsing.file_parser import Quantity, TextParser
 from nomad.units import ureg
-from nomad.parsing.file_parser import TextParser, Quantity
-
 from nomad_simulations.schema_packages.model_method import Wannier
-from nomad_simulations.schema_packages.properties import HoppingMatrix, CrystalFieldSplitting
+from nomad_simulations.schema_packages.properties import (
+    CrystalFieldSplitting,
+    HoppingMatrix,
+)
 from nomad_simulations.schema_packages.variables import WignerSeitz
 
 
@@ -33,7 +37,7 @@ class HrParser(TextParser):
     def init_quantities(self):
         self._quantities = [
             Quantity('degeneracy_factors', r'\s*written on[\s\w]*:\d*:\d*\s*([\d\s]+)'),
-            Quantity('hoppings', rf'\s*([-\d\s.]+)', repeats=False),
+            Quantity('hoppings', r'\s*([-\d\s.]+)', repeats=False),
         ]
 
 
@@ -44,8 +48,8 @@ class Wannier90HrParser:
         self.hr_parser = HrParser(mainfile=hr_file)
 
     def parse_hoppings(
-        self, wannier_method: Optional[Wannier], logger: BoundLogger
-    ) -> Tuple[Optional[HoppingMatrix], Optional[CrystalFieldSplitting]]:
+        self, wannier_method: Optional[Wannier], logger: 'BoundLogger'
+    ) -> tuple[Optional[HoppingMatrix], Optional[CrystalFieldSplitting]]:
         """
         Parse the `HoppingMatrix` and `CrystalFieldSplitting` sections from the `*hr.dat` file.
 
@@ -54,7 +58,7 @@ class Wannier90HrParser:
             logger (BoundLogger): The logger to log messages.
 
         Returns:
-            (Tuple[Optional[HoppingMatrix], Optional[CrystalFieldSplitting]]): The parsed `HoppingMatrix` and
+            (tuple[Optional[HoppingMatrix], Optional[CrystalFieldSplitting]]): The parsed `HoppingMatrix` and
             `CrystalFieldSplitting` properties].
         """
         if wannier_method is None:

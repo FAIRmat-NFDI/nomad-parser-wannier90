@@ -17,14 +17,15 @@
 # limitations under the License.
 #
 
+from typing import TYPE_CHECKING, Optional, Union
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
+
 import numpy as np
-from typing import List, Optional, Tuple, Union
-from structlog.stdlib import BoundLogger
-
-from nomad.parsing.file_parser import TextParser, Quantity
-
-from nomad_simulations.schema_packages.model_system import ModelSystem, AtomicCell
+from nomad.parsing.file_parser import Quantity, TextParser
 from nomad_simulations.schema_packages.atoms_state import OrbitalsState
+from nomad_simulations.schema_packages.model_system import AtomicCell, ModelSystem
 
 
 class WInParser(TextParser):
@@ -36,11 +37,11 @@ class WInParser(TextParser):
 
         self._quantities = [
             Quantity(
-                'energy_fermi', rf'\n\rfermi_energy\s*=\s*([\d\.\-]+)', repeats=False
+                'energy_fermi', r'\n\rfermi_energy\s*=\s*([\d\.\-]+)', repeats=False
             ),
             Quantity(
                 'projections',
-                rf'[bB]egin [pP]rojections([\s\S]+?)(?:[eE]nd [pP]rojections)',
+                r'[bB]egin [pP]rojections([\s\S]+?)(?:[eE]nd [pP]rojections)',
                 repeats=False,
                 str_operation=str_proj_to_list,
             ),
@@ -94,7 +95,7 @@ class Wannier90WInParser:
         }
 
     def _convert_positions_to_symbols(
-        self, atomic_cell: AtomicCell, units: str, positions: List[float]
+        self, atomic_cell: AtomicCell, units: str, positions: list[float]
     ) -> Optional[str]:
         """
         Convert the atom `positions` in fractional or cartesian coordinates to the atom `chemical_symbols`.
@@ -102,7 +103,7 @@ class Wannier90WInParser:
         Args:
             atomic_cell (AtomicCell): The `AtomicCell` section to which `positions` are extracted
             units (str): The units in which the positions are defined.
-            positions (List[float]): The positions in fractional or cartesian coordinates to be converted to `chemical_symbols`.
+            positions (list[float]): The positions in fractional or cartesian coordinates to be converted to `chemical_symbols`.
 
         Returns:
             (Optional[str]): The `chemical_symbols` of the atom at the position `val`.
@@ -120,7 +121,7 @@ class Wannier90WInParser:
         atom: Union[str, int],
         atomic_cell: AtomicCell,
         units: str,
-    ) -> Tuple[Optional[str], List[int]]:
+    ) -> tuple[Optional[str], list[int]]:
         """
         Parse the atom indices for the child model system.
 
@@ -131,7 +132,7 @@ class Wannier90WInParser:
             units (str): The units in which the positions are defined.
 
         Returns:
-            (Tuple[str, List[int]]): The `branch_label` and `atom_indices` for the child model system.
+            (tuple[str, list[int]]): The `branch_label` and `atom_indices` for the child model system.
         """
         if isinstance(atom, int):
             return '', [atom]
@@ -154,16 +155,16 @@ class Wannier90WInParser:
 
     def populate_orbitals_state(
         self,
-        projection: List[str],
+        projection: list[str],
         model_system_child: ModelSystem,
         atomic_cell: AtomicCell,
-        logger: BoundLogger,
+        logger: 'BoundLogger',
     ) -> None:
         """
         Populate the `OrbitalsState` sections for the AtomsState relevant for the Wannier projection.
 
         Args:
-            projection (List[Union[int, str]]): The projection information for the atom.
+            projection (list[Union[int, str]]): The projection information for the atom.
             model_system_child (ModelSystem): The child model system to get the `atom_indices`.
             atomic_cell (AtomicCell): The `AtomicCell` section where `positions` are stored.
             logger (BoundLogger): The logger to log messages.
@@ -208,8 +209,8 @@ class Wannier90WInParser:
     def parse_child_model_systems(
         self,
         model_system: ModelSystem,
-        logger: BoundLogger,
-    ) -> Optional[List[ModelSystem]]:
+        logger: 'BoundLogger',
+    ) -> Optional[list[ModelSystem]]:
         """
         Parse the child model systems from the `*.win` file to be added as sub-sections of the parent `ModelSystem` section. We
         also store the `OrbitalsState` information of the projected atoms.
@@ -219,7 +220,7 @@ class Wannier90WInParser:
             logger (BoundLogger): The logger to log messages.
 
         Returns:
-            (Optional[List[ModelSystem]]): The list of child model systems with the projected atoms information.
+            (Optional[list[ModelSystem]]): The list of child model systems with the projected atoms information.
         """
         # Check if `atomic_cell` is present in `model_system``
         if model_system.cell is None or len(model_system.cell) == 0:

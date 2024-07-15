@@ -17,17 +17,21 @@
 # limitations under the License.
 #
 
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
+
 import numpy as np
-from typing import Optional, List
-from structlog.stdlib import BoundLogger
-
 from nomad.parsing.file_parser import DataTextParser
-
+from nomad.units import ureg
 from nomad_simulations.schema_packages.model_method import Wannier
 from nomad_simulations.schema_packages.model_system import ModelSystem
 from nomad_simulations.schema_packages.numerical_settings import (
-    KSpace,
     KLinePath as KLinePathSettings,
+)
+from nomad_simulations.schema_packages.numerical_settings import (
+    KSpace,
 )
 from nomad_simulations.schema_packages.properties import ElectronicBandStructure
 from nomad_simulations.schema_packages.variables import KLinePath
@@ -43,7 +47,7 @@ class Wannier90BandParser:
         self,
         reciprocal_lattice_vectors: Optional[np.ndarray],
         k_line_path: KLinePathSettings,
-        logger: BoundLogger,
+        logger: 'BoundLogger',
     ) -> None:
         """
         Parse the `KLinePath` settings from the `*band.dat` file using the `KLinePath.resolve_points` method. The
@@ -69,9 +73,21 @@ class Wannier90BandParser:
         self,
         wannier_method: Optional[Wannier],
         k_space: Optional[KSpace],
-        model_systems: List[ModelSystem],
-        logger: BoundLogger,
+        model_systems: list[ModelSystem],
+        logger: 'BoundLogger',
     ) -> Optional[ElectronicBandStructure]:
+        """
+        Parse the `ElectronicBandStructure` section from the `*band.dat` file.
+
+        Args:
+            wannier_method (Optional[Wannier]): The `Wannier` method section which contains the number of orbitals information.
+            k_space (Optional[KSpace]): The `KSpace` settings section.
+            model_systems (list[ModelSystem]): The list of `ModelSystem` sections.
+            logger (BoundLogger): The logger to log messages.
+
+        Returns:
+            (Optional[ElectronicBandStructure]): The parsed `ElectronicBandStructure` property.
+        """
         if wannier_method is None:
             logger.warning('Could not parse the `Wannier` method.')
             return None, None
@@ -81,7 +97,13 @@ class Wannier90BandParser:
             return None
 
         # Resolving `reciprocal_lattice_vectors` from `KSpace` method
-        rlv = k_space.resolve_reciprocal_lattice_vectors(model_systems, logger)
+        try:
+            rlv = k_space.resolve_reciprocal_lattice_vectors(model_systems, logger)
+        except Exception:
+            logger.error(
+                'Could not resolve the reciprocal lattice vectors for obtaining the band structure.'
+            )
+            return None
         # And parsing the points from the `*band.dat` file
         k_line_path = k_space.k_line_path
         self.parse_k_line_path_settings(
@@ -102,5 +124,5 @@ class Wannier90BandParser:
         k_line_path_variables.points = k_line_path  # ! Wait for @amirgolpv to check
         band_structure.variables = [k_line_path_variables]
         data = self.band_parser.data.transpose()[1:].transpose()
-        band_structure.value = data
+        band_structure.value = data * ureg.eV
         return band_structure
