@@ -45,28 +45,18 @@ class Wannier90ParserTest:
             ([], []),
             (
                 ['La', 'La', 'Cu', 'O', 'O', 'O', 'O'],
-                [
-                    AtomsState(chemical_symbol='La'),
-                    AtomsState(chemical_symbol='La'),
-                    AtomsState(chemical_symbol='Cu'),
-                    AtomsState(chemical_symbol='O'),
-                    AtomsState(chemical_symbol='O'),
-                    AtomsState(chemical_symbol='O'),
-                    AtomsState(chemical_symbol='O'),
-                ],
+                ['La', 'La', 'Cu', 'O', 'O', 'O', 'O'],
             ),
         ],
     )
-    def test_parse_atoms_state(
-        self, labels: Optional[list[str]], result: list[AtomsState]
-    ):
+    def test_parse_atoms_state(self, parser, labels: Optional[list[str]], result: list):
         """Test the `parse_atoms_state` method."""
         atoms_states = parser.parse_atoms_state(labels=labels)
         if len(atoms_states) == 0:
             assert atoms_states == result
         else:
             for index, atom in atoms_states:
-                assert atom.chemical_symbol == result[index].chemical_symbol
+                assert atom.chemical_symbol == result[index]
 
 
 def test_single_point_La2CuO4(parser):
