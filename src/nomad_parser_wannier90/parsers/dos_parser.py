@@ -17,12 +17,11 @@
 # limitations under the License.
 #
 
-import numpy as np
 from typing import Optional
 
-from nomad.units import ureg
+import numpy as np
 from nomad.parsing.file_parser import DataTextParser
-
+from nomad.units import ureg
 from nomad_simulations.schema_packages.properties import ElectronicDensityOfStates
 from nomad_simulations.schema_packages.variables import Energy2
 

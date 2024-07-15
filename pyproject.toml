@@ -26,7 +26,7 @@ dependencies = [
     "nomad-lab>=1.3.0",
     "nomad-schema-plugin-simulation-workflow@git+https://github.com/nomad-coe/nomad-schema-plugin-simulation-workflow.git@develop",
     "nomad-schema-plugin-run@git+https://github.com/nomad-coe/nomad-schema-plugin-run.git@develop",
-    "nomad-simulations@git+https://github.com/nomad-coe/nomad-simulations.git@develop",
+    "nomad-simulations>=0.0.2",
 ]
 
 [project.urls]
@@ -34,7 +34,6 @@ dependencies = [
 "Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-parser-wannier90/issues"
 "Documentation" = "https://FAIRmat-NFDI.github.io/nomad-parser-wannier90/"
 
-[project.optional-dependencies]
 [project.optional-dependencies]
 dev = [
     "mypy==1.0.1",
@@ -81,6 +80,9 @@ select = [
     "E", # pycodestyle
     "W", # pycodestyle
     "PL", # pylint
+    "F", # Pyflakes
+    "UP", # pyupgrade
+    "I", # isort
 ]
 
 ignore = [
@@ -88,6 +90,7 @@ ignore = [
     "E701", # Multiple statements on one line (colon)
     "E731", # Do not assign a lambda expression, use a def
     "E402",  # Module level import not at top of file
+    "F401",
     "PLR0911", # Too many return statements
     "PLR0912", # Too many branches
     "PLR0913", # Too many arguments in function definition

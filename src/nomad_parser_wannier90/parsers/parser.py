@@ -17,57 +17,61 @@
 # limitations under the License.
 #
 
-import os
 import logging
+import os
+from typing import Optional
+
 import numpy as np
-from typing import List, Optional
-from structlog.stdlib import BoundLogger
-
 from nomad.config import config
-from nomad.units import ureg
 from nomad.datamodel import EntryArchive
-from nomad.parsing.file_parser import TextParser, Quantity, DataTextParser
+from nomad.parsing.file_parser import DataTextParser, Quantity, TextParser
 from nomad.parsing.parser import MatchingParser
-from simulationworkflowschema import SinglePoint
-from runschema.run import Run, Program
-from runschema.calculation import (
-    Calculation,
-    Dos,
-    DosValues,
-    BandStructure,
-    BandEnergies,
-    Energy,
-    HoppingMatrix,
-)
-from runschema.method import Method, AtomParameters, KMesh, Wannier, TB
-from runschema.system import System, Atoms, AtomsGroup
-
-# New schema
-from nomad_simulations.schema_packages.general import Simulation, Program as BaseProgram
-from nomad_simulations.schema_packages.model_system import ModelSystem, AtomicCell
+from nomad.units import ureg
 from nomad_simulations.schema_packages.atoms_state import (
     AtomsState,
     CoreHole,
 )
+from nomad_simulations.schema_packages.general import Program as BaseProgram
+
+# New schema
+from nomad_simulations.schema_packages.general import Simulation
 from nomad_simulations.schema_packages.model_method import (
     ModelMethod,
+)
+from nomad_simulations.schema_packages.model_method import (
     Wannier as ModelWannier,
+)
+from nomad_simulations.schema_packages.model_system import AtomicCell, ModelSystem
+from nomad_simulations.schema_packages.numerical_settings import (
+    KLinePath,
+    KSpace,
 )
 from nomad_simulations.schema_packages.numerical_settings import (
     KMesh as ModelKMesh,
-    KSpace,
-    KLinePath,
 )
-
 from nomad_simulations.schema_packages.outputs import Outputs
-from nomad_simulations.schema_packages.variables import Temperature
 from nomad_simulations.schema_packages.properties import ElectronicBandGap
+from nomad_simulations.schema_packages.variables import Temperature
+from runschema.calculation import (
+    BandEnergies,
+    BandStructure,
+    Calculation,
+    Dos,
+    DosValues,
+    Energy,
+    HoppingMatrix,
+)
+from runschema.method import TB, AtomParameters, KMesh, Method, Wannier
+from runschema.run import Program, Run
+from runschema.system import Atoms, AtomsGroup, System
+from simulationworkflowschema import SinglePoint
+from structlog.stdlib import BoundLogger
 
-from nomad_parser_wannier90.parsers.utils import get_files
-from nomad_parser_wannier90.parsers.win_parser import WInParser, Wannier90WInParser
-from nomad_parser_wannier90.parsers.hr_parser import HrParser, Wannier90HrParser
-from nomad_parser_wannier90.parsers.dos_parser import Wannier90DosParser
 from nomad_parser_wannier90.parsers.band_parser import Wannier90BandParser
+from nomad_parser_wannier90.parsers.dos_parser import Wannier90DosParser
+from nomad_parser_wannier90.parsers.hr_parser import HrParser, Wannier90HrParser
+from nomad_parser_wannier90.parsers.utils import get_files
+from nomad_parser_wannier90.parsers.win_parser import Wannier90WInParser, WInParser
 
 re_n = r'[\n\r]'
 
@@ -179,7 +183,7 @@ class WOutParser(TextParser):
             Quantity('labels', r'\|\s*([A-Z][a-z]*)', repeats=True),
             Quantity(
                 'positions',
-                rf'\|\s*([\-\d\.]+)\s*([\-\d\.]+)\s*([\-\d\.]+)',
+                r'\|\s*([\-\d\.]+)\s*([\-\d\.]+)\s*([\-\d\.]+)',
                 repeats=True,
                 dtype=float,
             ),
@@ -204,13 +208,13 @@ class WOutParser(TextParser):
             # Method quantities
             Quantity(
                 'k_mesh',
-                rf'\s*(K-POINT GRID[\s\S]+?)(?:-\s*MAIN)',
+                r'\s*(K-POINT GRID[\s\S]+?)(?:-\s*MAIN)',
                 repeats=False,
                 sub_parser=TextParser(quantities=kmesh_quantities),
             ),
             Quantity(
                 'k_line_path',
-                rf'\s*(K-space path sections\:[\s\S]+?)(?:\*-------)',
+                r'\s*(K-space path sections\:[\s\S]+?)(?:\*-------)',
                 repeats=False,
                 sub_parser=TextParser(quantities=klinepath_quantities),
             ),
@@ -234,7 +238,7 @@ class WOutParser(TextParser):
             ),
             Quantity(
                 'energy_windows',
-                rf'(\|\s*Energy\s*Windows\s*\|[\s\S]+?)(?:Number of target bands to extract:)',
+                r'(\|\s*Energy\s*Windows\s*\|[\s\S]+?)(?:Number of target bands to extract:)',
                 repeats=False,
                 sub_parser=TextParser(quantities=disentangle_quantities),
             ),
@@ -280,15 +284,15 @@ class Wannier90ParserData(MatchingParser):
             # "conv_tol": "convergence_tolerance_max_localization",
         }
 
-    def parse_atoms_state(self, labels: List[str]) -> List[AtomsState]:
+    def parse_atoms_state(self, labels: list[str]) -> list[AtomsState]:
         """
         Parse the `AtomsState` from the labels by storing them as the `chemical_symbols`.
 
         Args:
-            labels (List[str]): List of chemical element labels.
+            labels (list[str]): List of chemical element labels.
 
         Returns:
-            (List[AtomsState]): List of `AtomsState` sections.
+            (list[AtomsState]): List of `AtomsState` sections.
         """
         atoms_state = []
         for label in labels:

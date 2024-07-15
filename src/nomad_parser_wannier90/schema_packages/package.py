@@ -11,9 +11,8 @@ if TYPE_CHECKING:
     )
 
 from nomad.config import config
-from nomad.datamodel.data import Schema
-from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
-from nomad.metainfo import Quantity, SchemaPackage
+from nomad.metainfo import SchemaPackage
+from nomad_simulations.schema_packages.general import Simulation
 
 configuration = config.get_plugin_entry_point(
     'nomad_parser_wannier90.schema_packages:nomad_parser_wannier90_schema'
@@ -22,17 +21,10 @@ configuration = config.get_plugin_entry_point(
 m_package = SchemaPackage()
 
 
-class MySchema(Schema):
-    name = Quantity(
-        type=str, a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity)
-    )
-    message = Quantity(type=str)
-
+# not necessary: just for demonstration purposes
+class Wannier90Simulation(Simulation):
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         super().normalize(archive, logger)
-
-        logger.info('MySchema.normalize', parameter=configuration.parameter)
-        self.message = f'Hello {self.name}!'
 
 
 m_package.__init_metainfo__()

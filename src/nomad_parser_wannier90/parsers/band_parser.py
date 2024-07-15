@@ -17,20 +17,21 @@
 # limitations under the License.
 #
 
+from typing import Optional
+
 import numpy as np
-from typing import Optional, List
-from structlog.stdlib import BoundLogger
-
 from nomad.parsing.file_parser import DataTextParser
-
 from nomad_simulations.schema_packages.model_method import Wannier
 from nomad_simulations.schema_packages.model_system import ModelSystem
 from nomad_simulations.schema_packages.numerical_settings import (
-    KSpace,
     KLinePath as KLinePathSettings,
+)
+from nomad_simulations.schema_packages.numerical_settings import (
+    KSpace,
 )
 from nomad_simulations.schema_packages.properties import ElectronicBandStructure
 from nomad_simulations.schema_packages.variables import KLinePath
+from structlog.stdlib import BoundLogger
 
 
 class Wannier90BandParser:
@@ -69,9 +70,21 @@ class Wannier90BandParser:
         self,
         wannier_method: Optional[Wannier],
         k_space: Optional[KSpace],
-        model_systems: List[ModelSystem],
+        model_systems: list[ModelSystem],
         logger: BoundLogger,
     ) -> Optional[ElectronicBandStructure]:
+        """
+        Parse the `ElectronicBandStructure` section from the `*band.dat` file.
+
+        Args:
+            wannier_method (Optional[Wannier]): The `Wannier` method section which contains the number of orbitals information.
+            k_space (Optional[KSpace]): The `KSpace` settings section.
+            model_systems (list[ModelSystem]): The list of `ModelSystem` sections.
+            logger (BoundLogger): The logger to log messages.
+
+        Returns:
+            (Optional[ElectronicBandStructure]): The parsed `ElectronicBandStructure` property.
+        """
         if wannier_method is None:
             logger.warning('Could not parse the `Wannier` method.')
             return None, None

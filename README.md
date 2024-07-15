@@ -1,81 +1,114 @@
-# nomad-nomad-parser-wannier90
+[![NOMAD](https://img.shields.io/badge/Open%20NOMAD-lightgray?logo=data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI3LjUuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNTAwIDE1MDAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDE1MDAgMTUwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiMxOTJFODY7c3Ryb2tlOiMxOTJFODY7c3Ryb2tlLXdpZHRoOjE0MS4zMjI3O3N0cm9rZS1taXRlcmxpbWl0OjEwO30KCS5zdDF7ZmlsbDojMkE0Q0RGO3N0cm9rZTojMkE0Q0RGO3N0cm9rZS13aWR0aDoxNDEuMzIyNztzdHJva2UtbWl0ZXJsaW1pdDoxMDt9Cjwvc3R5bGU+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMTM2LjQsNjM2LjVjMTUwLjgsMCwyNzMuMS0xMjEuOSwyNzMuMS0yNzIuMlMxMjg3LjIsOTIuMSwxMTM2LjQsOTIuMWMtMTUwLjgsMC0yNzMuMSwxMjEuOS0yNzMuMSwyNzIuMgoJUzk4NS42LDYzNi41LDExMzYuNCw2MzYuNXoiLz4KPHBhdGggY2xhc3M9InN0MSIgZD0iTTEzMjksOTQ2Yy0xMDYuNC0xMDYtMjc4LjgtMTA2LTM4Ni4xLDBjLTk5LjYsOTkuMy0yNTguNywxMDYtMzY1LjEsMTguMWMtNi43LTcuNi0xMy40LTE2LjItMjEuMS0yMy45CgljLTEwNi40LTEwNi0xMDYuNC0yNzgsMC0zODQuOWMxMDYuNC0xMDYsMTA2LjQtMjc4LDAtMzg0LjlzLTI3OC44LTEwNi0zODYuMSwwYy0xMDcuMywxMDYtMTA2LjQsMjc4LDAsMzg0LjkKCWMxMDYuNCwxMDYsMTA2LjQsMjc4LDAsMzg0LjljLTYzLjIsNjMtODkuMSwxNTAtNzYuNywyMzIuMWM3LjcsNTcuMywzMy41LDExMy43LDc3LjYsMTU3LjZjMTA2LjQsMTA2LDI3OC44LDEwNiwzODYuMSwwCgljMTA2LjQtMTA2LDI3OC44LTEwNiwzODYuMSwwYzEwNi40LDEwNiwyNzguOCwxMDYsMzg2LjEsMEMxNDM1LjQsMTIyNCwxNDM1LjQsMTA1MiwxMzI5LDk0NnoiLz4KPC9zdmc+Cg==)](https://nomad-lab.eu/prod/v1/staging/gui/)
+![](https://coveralls.io/repos/github/nomad-coe/nomad-parser-wannier90/badge.svg?branch=develop)
+![](https://img.shields.io/pypi/v/nomad-parser-wannier90)
+![](https://img.shields.io/pypi/pyversions/nomad-parser-wannier90)
 
-NOMAD parser plugin for Wannier90 input/output files.
+# `nomad-parser-wannier90`
 
-----
+This is a plugin for [NOMAD](https://nomad-lab.eu) which contains the parser and extended sections definitions for [Wannier90](https://wannier.org/) input/output files. The parser uses the [`nomad-simulations`](https://github.com/nomad-coe/nomad-simulations) schema as the basis of the schema.
 
-This `nomad`_ plugin was generated with `Cookiecutter`_ along with `@nomad`_'s `cookiecutter-nomad-plugin`_ template.
+## Getting started
 
-
-### Install
-
-You should create a virtual environment. You will need the `nomad-lab` package (and `pytest`).
-We recommend using Python 3.9.
-
+`nomad-parser-wannier90` can be installed as a PyPI package using `pip`. We require features from the `nomad-lab` package which are not publicly available in PyPI, so an extra flag `--index-url` needs to be specified when pip installing this package:
 ```sh
-python3 -m venv .pyenv
-source .pyenv/bin/activate
+pip install nomad-parser-wannier90 --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+```
+
+## Development
+
+If you want to develop locally this package, clone the project and in the workspace folder, create a virtual environment (note this project uses Python 3.9):
+```sh
+git clone https://github.com/nomad-coe/nomad-simulations.git
+cd nomad-simulations
+python3.9 -m venv .pyenv
+. .pyenv/bin/activate
+```
+
+Make sure to have `pip` upgraded:
+```sh
 pip install --upgrade pip
-pip install -e '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+```
+
+We recommend installing `uv` for fast pip installation of the packages:
+```sh
+pip install uv
+```
+
+Install the `nomad-lab` package:
+```sh
+uv pip install '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
 ```
 
 **Note!**
-Until we have an official pypi NOMAD release with the plugins functionality. Make
-sure to include NOMAD's internal package registry (e.g. via `--index-url`).
+Until we have an official pypi NOMAD release with the plugins functionality make
+sure to include NOMAD's internal package registry (via `--index-url` in the above command).
 
-### Testing
-
-You can run automated tests with `pytest`:
-
+The plugin is still under development. If you would like to contribute, install the package in editable mode (with the added `-e` flag):
 ```sh
-pytest -svx tests
+uv pip install -e '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
 ```
 
-### Run linting
 
+### Run the tests
+
+You can run locally the tests:
+```sh
+python -m pytest -sv tests
+```
+
+where the `-s` and `-v` options toggle the output verbosity.
+
+Our CI/CD pipeline produces a more comprehensive test report using the `pytest-cov` package. You can generate a local coverage report:
+```sh
+uv pip install pytest-cov
+python -m pytest --cov=src tests
+```
+
+### Run linting and auto-formatting
+
+We use [Ruff](https://docs.astral.sh/ruff/) for linting and formatting the code. Ruff auto-formatting is also a part of the GitHub workflow actions. You can run locally:
 ```sh
 ruff check .
+ruff format . --check
 ```
 
-### Run auto-formatting
 
-This is entirely optional. To add this as a check in github actions pipeline, uncomment the `ruff-formatting` step in `./github/workflows/actions.yaml`.
+### Debugging
 
-```sh
-ruff format .
+For interactive debugging of the tests, use `pytest` with the `--pdb` flag. We recommend using an IDE for debugging, e.g., _VSCode_. If that is the case, add the following snippet to your `.vscode/launch.json`:
+```json
+{
+  "configurations": [
+      {
+        "name": "<descriptive tag>",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/.pyenv/bin/pytest",
+        "justMyCode": true,
+        "env": {
+            "_PYTEST_RAISE": "1"
+        },
+        "args": [
+            "-sv",
+            "--pdb",
+            "<path-to-plugin-tests>",
+        ]
+    }
+  ]
+}
 ```
 
-### Developing a NOMAD plugin
+where `<path-to-plugin-tests>` must be changed to the local path to the test module to be debugged.
 
-Follow the [guide](https://nomad-lab.eu/prod/v1/staging/docs/howto/plugins/plugins.html) on how to develop NOMAD plugins.
+The settings configuration file `.vscode/settings.json` automatically applies the linting and formatting upon saving the modified file.
 
-### Build the python package
-
-The `pyproject.toml` file contains everything that is necessary to turn the project
-into a pip installable python package. Run the python build tool to create a package distribution:
-
-```
-pip install build
-python -m build --sdist
-```
-
-You can install the package with pip:
-
-```
-pip install dist/nomad-nomad-parser-wannier90-0.0.1
-```
-
-Read more about python packages, `pyproject.toml`, and how to upload packages to PyPI
-on the [PyPI documentation](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
 
 ### Documentation on Github pages
 
-To deploy documentation on Github pages, make sure to [enable GitHub pages via the repo settings](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-from-a-branch). 
-
-To view the documentation locally, install the documentation related packages using:
-
+To view the documentation locally, install the related packages using:
 ```sh
-pip install -r requirements_docs.txt
+uv pip install -r requirements_docs.txt
 ```
 
 Run the documentation server:
@@ -83,11 +116,53 @@ Run the documentation server:
 mkdocs serve
 ```
 
-### Template update
+## Adding this plugin to NOMAD
 
-We use cruft to update the project based on template changes. A `cruft-update.yml` is included in Github workflows to automatically check for updates and create pull requests to apply updates. Follow the [instructions](https://github.blog/changelog/2022-05-03-github-actions-prevent-github-actions-from-creating-and-approving-pull-requests/) on how to enable Github Actions to create pull requests. 
+Currently, NOMAD has two distinct flavors that are relevant depending on your role as an user:
+1. [A NOMAD Oasis](#adding-this-plugin-in-your-nomad-oasis): any user with a NOMAD Oasis instance.
+2. [Local NOMAD installation and the source code of NOMAD](#adding-this-plugin-in-your-local-nomad-installation-and-the-source-code-of-nomad): internal developers.
 
-To run the check for updates locally, follow the instructions on [`cruft` website](https://cruft.github.io/cruft/#updating-a-project).
+### Adding this plugin in your NOMAD Oasis
 
-### License
-Distributed under the terms of the `Apache Software License 2.0`_ license, "nomad-nomad-parser-wannier90" is free and open source software
+Read the [NOMAD plugin documentation](https://nomad-lab.eu/prod/v1/staging/docs/howto/oasis/plugins_install.html) for all details on how to deploy the plugin on your NOMAD instance.
+
+### Adding this plugin in your local NOMAD installation and the source code of NOMAD
+
+Modify the text file under `/nomad/default_plugins.txt` and add:
+```sh
+<other-content-in-default_plugins.txt>
+nomad-parser-wannier90==x.y.z
+```
+where `x.y.z` represents the released version of this plugin.
+
+Then, go to your NOMAD folder, activate your NOMAD virtual environment and run:
+```sh
+deactivate
+cd <route-to-NOMAD-folder>/nomad
+source .pyenv/bin/activate
+./scripts/setup_dev_env.sh
+```
+
+Alternatively and only valid for your local NOMAD installation, you can modify `nomad.yaml` to include this plugin:
+```yaml
+plugins:
+  entry_points:
+    include:
+      - ["nomad_parser_wannier90.parsers:nomad_parser_wannier90_plugin"]
+      - ["nomad_parser_wannier90.schema_packages:nomad_parser_wannier90_schema"]
+```
+
+**Note!**
+Once you modify your `nomad.yaml` file adding `include`, all the default plugins will be disconnected, so you will need to include them as well.
+
+
+## Main contributors
+| Name | E-mail     | Github profiles |
+|------|------------|-----------------|
+| Dr. José M. Pizarro | [jose.pizarro@physik.hu-berlin.de](mailto:jose.pizarro@physik.hu-berlin.de) | [@JosePizarro3](https://github.com/JosePizarro3) |
+
+
+
+----
+
+This `nomad`_ plugin was generated with `Cookiecutter`_ along with `@nomad`_'s `cookiecutter-nomad-plugin`_ template.
