@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-import pytest
 import numpy as np
-
+import pytest
 from nomad.datamodel import EntryArchive
 from nomad_parser_wannier90.parsers.parser import Wannier90Parser
 

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-import pytest
-import numpy as np
 import os
 
+import numpy as np
+import pytest
 from nomad.datamodel import EntryArchive
 from nomad_parser_wannier90.parsers.parser import Wannier90Parser
 
@@ -48,7 +48,7 @@ def test_single_point_La2CuO4(parser):
 
 
 def test_single_point_LK99(parser):
-    archive = EntryArchive()
+    # archive = EntryArchive()
     assert True
     # parser.parse(
     #     os.path.join(os.path.dirname(__file__), 'data/lk99_liangsi_1/k000.wout'),
