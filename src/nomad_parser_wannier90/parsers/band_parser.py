@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 from nomad.parsing.file_parser import DataTextParser
+from nomad.units import ureg
 from nomad_simulations.schema_packages.model_method import Wannier
 from nomad_simulations.schema_packages.model_system import ModelSystem
 from nomad_simulations.schema_packages.numerical_settings import (
@@ -117,5 +118,5 @@ class Wannier90BandParser:
         k_line_path_variables.points = k_line_path  # ! Wait for @amirgolpv to check
         band_structure.variables = [k_line_path_variables]
         data = self.band_parser.data.transpose()[1:].transpose()
-        band_structure.value = data
+        band_structure.value = data * ureg.eV
         return band_structure

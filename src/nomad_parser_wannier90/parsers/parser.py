@@ -209,16 +209,18 @@ class Wannier90Parser(MatchingParser):
             'Nband': 'n_bloch_bands',
         }
 
-    def parse_atoms_state(self, labels: list[str]) -> list[AtomsState]:
+    def parse_atoms_state(self, labels: Optional[list[str]]) -> list[AtomsState]:
         """
         Parse the `AtomsState` from the labels by storing them as the `chemical_symbols`.
 
         Args:
-            labels (list[str]): List of chemical element labels.
+            labels (Optional[list[str]]): List of chemical element labels.
 
         Returns:
             (list[AtomsState]): List of `AtomsState` sections.
         """
+        if labels is None:
+            return []
         atoms_state = []
         for label in labels:
             atoms_state.append(AtomsState(chemical_symbol=label))
@@ -380,6 +382,8 @@ class Wannier90Parser(MatchingParser):
         outputs = Outputs()
         if simulation.model_system is not None:
             outputs.model_system_ref = simulation.model_system[-1]
+        if simulation.model_method is not None:
+            outputs.model_method_ref = simulation.model_method[-1]
 
         # Parse hoppings
         hr_files = get_files('*hr.dat', self.filepath, self.mainfile)
