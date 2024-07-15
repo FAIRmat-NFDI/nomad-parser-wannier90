@@ -23,7 +23,6 @@ import numpy as np
 import pytest
 from nomad.datamodel import EntryArchive
 from nomad_parser_wannier90.parsers.parser import Wannier90Parser
-from nomad_simulations.schema_packages.atoms_state import AtomsState
 
 from . import logger
 
@@ -175,16 +174,3 @@ def test_single_point_La2CuO4(parser):
     assert output.electronic_band_structures[0].value[123, 0].to(
         'eV'
     ).magnitude == approx(12.870674)
-
-
-def test_single_point_LK99(parser):
-    # archive = EntryArchive()
-    assert True
-    # parser.parse(
-    #     os.path.join('tests', 'data', 'lk99_liangsi_1', 'k000.wout'),
-    #     archive,
-    #     logger,
-    # )
-    # simulation = archive.data
-    # assert simulation.program.name == 'Wannier90'
-    # assert simulation.program.version == '2.0.1'
