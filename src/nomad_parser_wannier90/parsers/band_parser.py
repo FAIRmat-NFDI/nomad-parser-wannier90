@@ -17,7 +17,10 @@
 # limitations under the License.
 #
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
 
 import numpy as np
 from nomad.parsing.file_parser import DataTextParser
@@ -31,7 +34,6 @@ from nomad_simulations.schema_packages.numerical_settings import (
 )
 from nomad_simulations.schema_packages.properties import ElectronicBandStructure
 from nomad_simulations.schema_packages.variables import KLinePath
-from structlog.stdlib import BoundLogger
 
 
 class Wannier90BandParser:
@@ -44,7 +46,7 @@ class Wannier90BandParser:
         self,
         reciprocal_lattice_vectors: Optional[np.ndarray],
         k_line_path: KLinePathSettings,
-        logger: BoundLogger,
+        logger: 'BoundLogger',
     ) -> None:
         """
         Parse the `KLinePath` settings from the `*band.dat` file using the `KLinePath.resolve_points` method. The
@@ -71,7 +73,7 @@ class Wannier90BandParser:
         wannier_method: Optional[Wannier],
         k_space: Optional[KSpace],
         model_systems: list[ModelSystem],
-        logger: BoundLogger,
+        logger: 'BoundLogger',
     ) -> Optional[ElectronicBandStructure]:
         """
         Parse the `ElectronicBandStructure` section from the `*band.dat` file.

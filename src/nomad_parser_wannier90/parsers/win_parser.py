@@ -17,13 +17,15 @@
 # limitations under the License.
 #
 
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
 
 import numpy as np
 from nomad.parsing.file_parser import Quantity, TextParser
 from nomad_simulations.schema_packages.atoms_state import OrbitalsState
 from nomad_simulations.schema_packages.model_system import AtomicCell, ModelSystem
-from structlog.stdlib import BoundLogger
 
 
 class WInParser(TextParser):
@@ -156,7 +158,7 @@ class Wannier90WInParser:
         projection: list[str],
         model_system_child: ModelSystem,
         atomic_cell: AtomicCell,
-        logger: BoundLogger,
+        logger: 'BoundLogger',
     ) -> None:
         """
         Populate the `OrbitalsState` sections for the AtomsState relevant for the Wannier projection.
@@ -207,7 +209,7 @@ class Wannier90WInParser:
     def parse_child_model_systems(
         self,
         model_system: ModelSystem,
-        logger: BoundLogger,
+        logger: 'BoundLogger',
     ) -> Optional[list[ModelSystem]]:
         """
         Parse the child model systems from the `*.win` file to be added as sub-sections of the parent `ModelSystem` section. We

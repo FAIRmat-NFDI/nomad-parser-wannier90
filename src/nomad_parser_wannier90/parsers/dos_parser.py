@@ -23,7 +23,7 @@ import numpy as np
 from nomad.parsing.file_parser import DataTextParser
 from nomad.units import ureg
 from nomad_simulations.schema_packages.properties import ElectronicDensityOfStates
-from nomad_simulations.schema_packages.variables import Energy2
+from nomad_simulations.schema_packages.variables import Energy2 as Energy
 
 
 class Wannier90DosParser:
@@ -42,7 +42,7 @@ class Wannier90DosParser:
         # TODO add spin polarized case
         data = np.transpose(self.dos_parser.data)
         sec_dos = ElectronicDensityOfStates()
-        energies = Energy2(points=data[0] * ureg.eV)
+        energies = Energy(points=data[0] * ureg.eV)
         sec_dos.variables.append(energies)
         sec_dos.value = data[1] / ureg.eV
         return sec_dos

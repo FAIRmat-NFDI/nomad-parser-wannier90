@@ -17,7 +17,10 @@
 # limitations under the License.
 #
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
 
 import numpy as np
 from nomad.parsing.file_parser import Quantity, TextParser
@@ -28,7 +31,6 @@ from nomad_simulations.schema_packages.properties import (
     HoppingMatrix,
 )
 from nomad_simulations.schema_packages.variables import WignerSeitz
-from structlog.stdlib import BoundLogger
 
 
 class HrParser(TextParser):
@@ -46,7 +48,7 @@ class Wannier90HrParser:
         self.hr_parser = HrParser(mainfile=hr_file)
 
     def parse_hoppings(
-        self, wannier_method: Optional[Wannier], logger: BoundLogger
+        self, wannier_method: Optional[Wannier], logger: 'BoundLogger'
     ) -> tuple[Optional[HoppingMatrix], Optional[CrystalFieldSplitting]]:
         """
         Parse the `HoppingMatrix` and `CrystalFieldSplitting` sections from the `*hr.dat` file.

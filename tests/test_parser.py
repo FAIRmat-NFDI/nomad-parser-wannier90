@@ -38,7 +38,7 @@ def parser():
 def test_single_point_La2CuO4(parser):
     archive = EntryArchive()
     parser.parse(
-        os.path.join(os.path.dirname(__file__), 'data/lco_mlwf/lco.wout'),
+        os.path.join('tests', 'data', 'lco_mlwf', 'lco.wout'),
         archive,
         logger,
     )
@@ -51,7 +51,7 @@ def test_single_point_LK99(parser):
     # archive = EntryArchive()
     assert True
     # parser.parse(
-    #     os.path.join(os.path.dirname(__file__), 'data/lk99_liangsi_1/k000.wout'),
+    #     os.path.join('tests', 'data', 'lk99_liangsi_1', 'k000.wout'),
     #     archive,
     #     logger,
     # )

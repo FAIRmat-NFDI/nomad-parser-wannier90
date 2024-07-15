@@ -25,7 +25,6 @@ license = { file = "LICENSE" }
 dependencies = [
     "nomad-lab>=1.3.0",
     "nomad-schema-plugin-simulation-workflow@git+https://github.com/nomad-coe/nomad-schema-plugin-simulation-workflow.git@develop",
-    "nomad-schema-plugin-run@git+https://github.com/nomad-coe/nomad-schema-plugin-run.git@develop",
     "nomad-simulations>=0.0.2",
 ]
 
