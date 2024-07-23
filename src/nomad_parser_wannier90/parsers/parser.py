@@ -188,9 +188,8 @@ class WOutParser(TextParser):
 
 
 class Wannier90Parser(MatchingParser):
-    level = 1
-
     def __init__(self, *args, **kwargs):
+        super().__init__()
         self.wout_parser = WOutParser()
 
         self._dft_codes = [
