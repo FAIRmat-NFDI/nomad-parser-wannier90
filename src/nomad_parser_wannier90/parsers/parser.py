@@ -451,7 +451,7 @@ class Wannier90Parser(MatchingParser):
             version=self.wout_parser.get('version', ''),
             link='https://wannier.org/',
         )
-        archive.m_add_sub_section(EntryArchive.data, simulation)
+        archive.data = simulation
 
         # `ModelSystem` parsing
         model_system = self.parse_model_system(logger)
