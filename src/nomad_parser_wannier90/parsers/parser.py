@@ -449,7 +449,6 @@ class Wannier90Parser(MatchingParser):
         simulation.program = Program(
             name='Wannier90',
             version=self.wout_parser.get('version', ''),
-            link='https://wannier.org/',
         )
         archive.data = simulation
 

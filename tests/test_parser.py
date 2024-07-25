@@ -70,7 +70,6 @@ def test_single_point_La2CuO4(parser):
     # Program
     assert simulation.program.name == 'Wannier90'
     assert simulation.program.version == '3.1.0'
-    assert simulation.program.link == 'https://wannier.org/'
 
     # ModelSystem
     assert len(simulation.model_system) == 1
