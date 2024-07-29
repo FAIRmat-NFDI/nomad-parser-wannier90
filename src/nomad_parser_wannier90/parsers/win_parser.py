@@ -139,10 +139,14 @@ class Wannier90WInParser:
         if atom.startswith('f='):  # fractional coordinates
             positions = [float(x) for x in atom.replace('f=', '').split(',')]
             positions = np.dot(positions, atomic_cell.lattice_vectors.magnitude)
-            sites = self._convert_positions_to_symbols(atomic_cell, units, positions)
+            sites = self._convert_positions_to_symbols(
+                atomic_cell=atomic_cell, units=units, positions=positions
+            )
         elif atom.startswith('c='):  # cartesian coordinates
             positions = [float(x) for x in atom.replace('c=', '').split(',')]
-            sites = self._convert_positions_to_symbols(atomic_cell, units, positions)
+            sites = self._convert_positions_to_symbols(
+                atomic_cell=atomic_cell, units=units, positions=positions
+            )
         else:  # atom label directly specified
             sites = atom
 
@@ -254,7 +258,7 @@ class Wannier90WInParser:
             atom = projection[0]
             try:
                 branch_label, atom_indices = self.parse_child_atom_indices(
-                    atom, atomic_cell, wannier90_units
+                    atom=atom, atomic_cell=atomic_cell, units=wannier90_units
                 )
                 model_system_child.branch_label = branch_label
                 model_system_child.atom_indices = atom_indices
@@ -266,7 +270,10 @@ class Wannier90WInParser:
 
             # orbital angular momentum information always index=1 for `projections[nat]`
             self.populate_orbitals_state(
-                projection, model_system_child, atomic_cell, logger
+                projection=projection,
+                model_system_child=model_system_child,
+                atomic_cell=atomic_cell,
+                logger=logger,
             )
             model_system_childs.append(model_system_child)
 

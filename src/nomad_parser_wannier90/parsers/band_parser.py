@@ -98,7 +98,9 @@ class Wannier90BandParser:
 
         # Resolving `reciprocal_lattice_vectors` from `KSpace` method
         try:
-            rlv = k_space.resolve_reciprocal_lattice_vectors(model_systems, logger)
+            rlv = k_space.resolve_reciprocal_lattice_vectors(
+                model_systems=model_systems, logger=logger
+            )
         except Exception:
             logger.error(
                 'Could not resolve the reciprocal lattice vectors for obtaining the band structure.'

@@ -208,6 +208,16 @@ class Wannier90Parser(MatchingParser):
             'Nband': 'n_bloch_bands',
         }
 
+    def init_parser(self, logger: 'BoundLogger') -> None:
+        """
+        Initialize the `WOutParser` with the mainfile and logger.
+
+        Args:
+            logger (BoundLogger): The logger to log messages.
+        """
+        self.wout_parser.mainfile = self.mainfile
+        self.wout_parser.logger = logger
+
     def parse_atoms_state(self, labels: Optional[list[str]]) -> list[AtomsState]:
         """
         Parse the `AtomsState` from the labels by storing them as the `chemical_symbols`.
@@ -249,7 +259,7 @@ class Wannier90Parser(MatchingParser):
         # Parsing `atoms_state` from `structure`
         labels = self.wout_parser.get('structure', {}).get('labels')
         if labels is not None:
-            atoms_state = self.parse_atoms_state(labels)
+            atoms_state = self.parse_atoms_state(labels=labels)
             atomic_cell.atoms_state = atoms_state
         # and parsing `positions`
         if self.wout_parser.get('structure', {}).get('positions') is not None:
@@ -385,14 +395,16 @@ class Wannier90Parser(MatchingParser):
             outputs.model_method_ref = simulation.model_method[-1]
 
         # Parse hoppings
-        hr_files = get_files('*hr.dat', self.filepath, self.mainfile)
+        hr_files = get_files(
+            pattern='*hr.dat', filepath=self.mainfile, stripname=self.basename
+        )
         if len(hr_files) > 1:
             logger.info('Multiple `*hr.dat` files found.')
         # contains information about `n_orbitals`
         wannier_method = simulation.m_xpath('model_method[-1]', dict=False)
         for hr_file in hr_files:
             hopping_matrix, crystal_field_splitting = Wannier90HrParser(
-                hr_file
+                hr_file=hr_file
             ).parse_hoppings(wannier_method=wannier_method, logger=logger)
             if hopping_matrix is not None:
                 outputs.hopping_matrices.append(hopping_matrix)
@@ -400,16 +412,20 @@ class Wannier90Parser(MatchingParser):
                 outputs.crystal_field_splittings.append(crystal_field_splitting)
 
         # Parse DOS
-        dos_files = get_files('*dos.dat', self.filepath, self.mainfile)
+        dos_files = get_files(
+            pattern='*dos.dat', filepath=self.mainfile, stripname=self.basename
+        )
         if len(dos_files) > 1:
             logger.info('Multiple `*dos.dat` files found.')
         for dos_file in dos_files:
-            electronic_dos = Wannier90DosParser(dos_file).parse_dos()
+            electronic_dos = Wannier90DosParser(dos_file=dos_file).parse_dos()
             if electronic_dos is not None:
                 outputs.electronic_dos.append(electronic_dos)
 
         # Parse BandStructure
-        band_files = get_files('*band.dat', self.filepath, self.mainfile)
+        band_files = get_files(
+            pattern='*band.dat', filepath=self.mainfile, stripname=self.basename
+        )
         # contains information about `k_line_path`
         k_space = simulation.m_xpath(
             'model_method[-1].numerical_settings[-1]', dict=False
@@ -419,7 +435,9 @@ class Wannier90Parser(MatchingParser):
         if len(band_files) > 1:
             logger.info('Multiple `*band.dat` files found.')
         for band_file in band_files:
-            band_structure = Wannier90BandParser(band_file).parse_band_structure(
+            band_structure = Wannier90BandParser(
+                band_file=band_file
+            ).parse_band_structure(
                 k_space=k_space,
                 wannier_method=wannier_method,
                 model_systems=model_systems,
@@ -430,19 +448,15 @@ class Wannier90Parser(MatchingParser):
 
         return outputs
 
-    def init_parser(self, logger: 'BoundLogger') -> None:
-        self.wout_parser.mainfile = self.filepath
-        self.wout_parser.logger = logger
-
     def parse(
         self, filepath: str, archive: EntryArchive, logger: 'BoundLogger'
     ) -> None:
-        self.filepath = filepath
+        self.mainfile = filepath
+        self.maindir = os.path.dirname(self.mainfile)
+        self.basename = os.path.basename(self.mainfile)
         self.archive = archive
-        self.maindir = os.path.dirname(self.filepath)
-        self.mainfile = os.path.basename(self.filepath)
 
-        self.init_parser(logger)
+        self.init_parser(logger=logger)
 
         # Adding Simulation to data
         simulation = Simulation()
@@ -453,20 +467,22 @@ class Wannier90Parser(MatchingParser):
         archive.data = simulation
 
         # `ModelSystem` parsing
-        model_system = self.parse_model_system(logger)
+        model_system = self.parse_model_system(logger=logger)
         if model_system is not None:
             simulation.model_system.append(model_system)
 
             # Child `ModelSystem` and `OrbitalsState` parsing
-            win_files = get_files('*.win', self.filepath, self.mainfile)
+            win_files = get_files(
+                pattern='*.win', filepath=self.mainfile, stripname=self.basename
+            )
             if len(win_files) > 1:
                 logger.warning(
                     'Multiple `*.win` files found. We will parse the first one.'
                 )
             if win_files is not None:
                 child_model_systems = Wannier90WInParser(
-                    win_files[0]
-                ).parse_child_model_systems(model_system, logger)
+                    win_file=win_files[0]
+                ).parse_child_model_systems(model_system=model_system, logger=logger)
                 model_system.model_system = child_model_systems
 
         # `ModelWannier(ModelMethod)` parsing
@@ -474,7 +490,7 @@ class Wannier90Parser(MatchingParser):
         simulation.model_method.append(model_method)
 
         # `Outputs` parsing
-        outputs = self.parse_outputs(simulation, logger)
+        outputs = self.parse_outputs(simulation=simulation, logger=logger)
         simulation.outputs.append(outputs)
 
         # Workflow section
