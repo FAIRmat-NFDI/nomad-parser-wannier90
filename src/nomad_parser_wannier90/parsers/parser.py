@@ -49,7 +49,7 @@ from nomad_simulations.schema_packages.numerical_settings import (
     KMesh as ModelKMesh,
 )
 from nomad_simulations.schema_packages.outputs import Outputs
-from simulationworkflowschema import SinglePoint
+# from simulationworkflowschema import SinglePoint
 
 from nomad_parser_wannier90.parsers.band_parser import Wannier90BandParser
 from nomad_parser_wannier90.parsers.dos_parser import Wannier90DosParser
@@ -495,5 +495,5 @@ class Wannier90Parser(MatchingParser):
 
         # Workflow section
         # TODO extend to handle DFT+TB workflows using `self._dft_codes`
-        workflow = SinglePoint()
-        self.archive.workflow2 = workflow
+        # workflow = SinglePoint()
+        # self.archive.workflow2 = workflow
