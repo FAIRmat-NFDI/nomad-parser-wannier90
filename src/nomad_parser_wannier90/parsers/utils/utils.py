@@ -1,24 +1,14 @@
-#
-# Copyright The NOMAD Authors.
-#
-# This file is part of NOMAD.
-# See https://nomad-lab.eu for further info.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import EntryArchive
 
 import os
 from glob import glob
+
+from nomad.datamodel.metainfo.workflow import TaskReference
+
+from nomad_parser_wannier90.schema_packages.package import DFTPlusTB
 
 
 def get_files(pattern: str, filepath: str, stripname: str = '', deep: bool = True):
@@ -49,3 +39,34 @@ def get_files(pattern: str, filepath: str, stripname: str = '', deep: bool = Tru
 
     filenames = [f for f in filenames if os.access(f, os.F_OK)]
     return filenames
+
+
+def parse_dft_plus_tb_workflow(
+    dft_archive: 'EntryArchive', tb_archive: 'EntryArchive'
+) -> DFTPlusTB:
+    """
+    Parses the DFT+TB workflow by using the DFT and TB archives.
+
+    Args:
+        dft_archive (EntryArchive): The DFT archive.
+        tb_archive (EntryArchive): The TB archive.
+
+    Returns:
+        DFTPlusTB: The parsed DFT+TB workflow section.
+    """
+    dft_plus_tb = DFTPlusTB()
+
+    if not dft_archive.workflow2 or not tb_archive.workflow2:
+        return
+
+    dft_task = dft_archive.workflow2
+    tb_task = tb_archive.workflow2
+
+    dft_plus_tb.inputs = dft_task.inputs[0]
+    dft_plus_tb.outputs = tb_task.outputs[-1]
+    dft_plus_tb.tasks = [
+        TaskReference(task=dft_task),
+        TaskReference(task=tb_task),
+    ]
+
+    return dft_plus_tb

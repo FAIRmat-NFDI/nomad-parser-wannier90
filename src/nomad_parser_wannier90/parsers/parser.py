@@ -49,13 +49,14 @@ from nomad_simulations.schema_packages.numerical_settings import (
     KMesh as ModelKMesh,
 )
 from nomad_simulations.schema_packages.outputs import Outputs
-from simulationworkflowschema import SinglePoint
 
+# from nomad_simulations.schema_packages.utils import check_simulation_cell
 from nomad_parser_wannier90.parsers.band_parser import Wannier90BandParser
 from nomad_parser_wannier90.parsers.dos_parser import Wannier90DosParser
 from nomad_parser_wannier90.parsers.hr_parser import Wannier90HrParser
-from nomad_parser_wannier90.parsers.utils import get_files
+from nomad_parser_wannier90.parsers.utils import get_files, parse_dft_plus_tb_workflow
 from nomad_parser_wannier90.parsers.win_parser import Wannier90WInParser
+from nomad_parser_wannier90.schema_packages.package import SinglePoint
 
 re_n = r'[\n\r]'
 
@@ -448,6 +449,17 @@ class Wannier90Parser(MatchingParser):
 
         return outputs
 
+    def get_mainfile_keys(self, **kwargs):
+        """
+        Generates extra `child_archives` to create the DFT+TB workflow if some conditions are met.
+        """
+        filepath = kwargs.get('filename')
+        mainfile = os.path.basename(filepath)
+        wannier90_files = get_files('*.wout', filepath, mainfile, deep=False)
+        if len(wannier90_files) == 1:
+            return ['DMFT_workflow']
+        return True
+
     def parse(
         self, filepath: str, archive: EntryArchive, logger: 'BoundLogger'
     ) -> None:
@@ -494,6 +506,63 @@ class Wannier90Parser(MatchingParser):
         simulation.outputs.append(outputs)
 
         # Workflow section
-        # TODO extend to handle DFT+TB workflows using `self._dft_codes`
         workflow = SinglePoint()
         self.archive.workflow2 = workflow
+
+        # TODO extend to handle DFT+TB workflows using `self._dft_codes`
+        # Checking if other mainfiles are present, if the closest is a DFT code, tries to create the
+        # DFT+TB workflow and link it with the corresponding Wannier90 entry
+        vasprun_files = get_files(
+            pattern='*vasprun.xml',
+            filepath=self.mainfile,
+            stripname=self.basename,
+            deep=False,
+        )
+        outcar_files = get_files(
+            pattern='*OUTCAR',
+            filepath=self.mainfile,
+            stripname=self.basename,
+            deep=False,
+        )
+        dft_files = []
+        if len(vasprun_files) == 0:
+            dft_files = outcar_files
+        elif len(outcar_files) == 0:
+            dft_files = vasprun_files
+        if len(dft_files) == 1:
+            dft_path = dft_files[-1].split('raw/')[-1]
+            filepath_stripped = self.filepath.split('raw/')[-1]
+            try:
+                # For automatic workflows
+                from nomad.app.v1.models import MetadataRequired
+                from nomad.search import search
+
+                upload_id = self.archive.metadata.upload_id
+                search_ids = search(
+                    owner='visible',
+                    user_id=self.archive.metadata.main_author.user_id,
+                    query={'upload_id': upload_id},
+                    required=MetadataRequired(include=['entry_id', 'mainfile']),
+                ).data
+                metadata = [[sid['entry_id'], sid['mainfile']] for sid in search_ids]
+                if len(metadata) > 1:
+                    for entry_id, mainfile in metadata:
+                        if (
+                            mainfile == filepath_stripped
+                        ):  # we skipped the current parsed mainfile
+                            continue
+                        entry_archive = self.archive.m_context.load_archive(
+                            entry_id, upload_id, None
+                        )
+                        if dft_path == mainfile:
+                            dft_archive = entry_archive
+                            dft_plus_tb_archive = self._child_archives.get(
+                                'DFT_plus_TB_workflow'
+                            )
+                            dft_plus_tb = parse_dft_plus_tb_workflow(
+                                dft_archive=dft_archive, tb_archive=self.archive
+                            )
+                            dft_plus_tb_archive.workflow2 = dft_plus_tb
+                            break
+            except Exception:
+                logger.warning('Could not resolve the DFT+TB workflow for Wannier90.')
