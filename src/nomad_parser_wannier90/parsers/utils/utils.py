@@ -7,8 +7,7 @@ import os
 from glob import glob
 
 from nomad.datamodel.metainfo.workflow import TaskReference
-
-from nomad_parser_wannier90.schema_packages.package import DFTPlusTB
+from nomad_simulations.schema_packages.workflow import DFTPlusTB
 
 
 def get_files(pattern: str, filepath: str, stripname: str = '', deep: bool = True):

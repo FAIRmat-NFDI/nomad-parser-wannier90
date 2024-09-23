@@ -1,22 +1,3 @@
-#
-# Copyright The NOMAD Authors.
-#
-# This file is part of NOMAD.
-# See https://nomad-lab.eu for further info.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 import os
 from typing import TYPE_CHECKING, Optional
 
@@ -49,6 +30,7 @@ from nomad_simulations.schema_packages.numerical_settings import (
     KMesh as ModelKMesh,
 )
 from nomad_simulations.schema_packages.outputs import Outputs
+from nomad_simulations.schema_packages.workflow import SinglePoint
 
 # from nomad_simulations.schema_packages.utils import check_simulation_cell
 from nomad_parser_wannier90.parsers.band_parser import Wannier90BandParser
@@ -56,7 +38,6 @@ from nomad_parser_wannier90.parsers.dos_parser import Wannier90DosParser
 from nomad_parser_wannier90.parsers.hr_parser import Wannier90HrParser
 from nomad_parser_wannier90.parsers.utils import get_files, parse_dft_plus_tb_workflow
 from nomad_parser_wannier90.parsers.win_parser import Wannier90WInParser
-from nomad_parser_wannier90.schema_packages.package import SinglePoint
 
 re_n = r'[\n\r]'
 
@@ -449,16 +430,51 @@ class Wannier90Parser(MatchingParser):
 
         return outputs
 
+    def workflow_dft_files(self, **kwargs) -> list[str]:
+        """
+        Check if in the upload of the Wannier90 mainfile, there are the corresponding DFT files to create the
+        DFT+TB workflow, and returns them if so. Implemented only for VASP DFT files.
+
+        Returns:
+            list[str]: Returns a list containing the DFT files if they are present, otherwise an empty list.
+        """
+        # Wannier90 file
+        wannier90_mainfile = kwargs.get('filename')
+        wannier90_basename = os.path.basename(wannier90_mainfile)
+
+        # DFT files
+        dft_files = []
+
+        # VASP DFT files
+        vasprun_files = get_files(
+            pattern='*vasprun.xml',
+            filepath=wannier90_mainfile,
+            stripname=wannier90_basename,
+            deep=False,
+        )
+        outcar_files = get_files(
+            pattern='*OUTCAR',
+            filepath=wannier90_mainfile,
+            stripname=wannier90_basename,
+            deep=False,
+        )
+        if not vasprun_files:
+            dft_files = outcar_files
+        else:
+            dft_files = vasprun_files
+
+        # TODO extend to other DFT codes
+
+        return dft_files
+
     def get_mainfile_keys(self, **kwargs):
         """
-        Generates extra `child_archives` to create the DFT+TB workflow if some conditions are met.
+        Generates extra `child_archives` to create the DFT+TB workflow if the conditions in `workflow_dft_files` are met.
         """
-        filepath = kwargs.get('filename')
-        mainfile = os.path.basename(filepath)
-        wannier90_files = get_files('*.wout', filepath, mainfile, deep=False)
-        if len(wannier90_files) == 1:
-            return ['DMFT_workflow']
-        return True
+        dft_files = self.workflow_dft_files(**kwargs)
+        if not dft_files:
+            return True
+        return ['DFTPlusTB_workflow']
 
     def parse(
         self, filepath: str, archive: EntryArchive, logger: 'BoundLogger'
@@ -512,23 +528,7 @@ class Wannier90Parser(MatchingParser):
         # TODO extend to handle DFT+TB workflows using `self._dft_codes`
         # Checking if other mainfiles are present, if the closest is a DFT code, tries to create the
         # DFT+TB workflow and link it with the corresponding Wannier90 entry
-        vasprun_files = get_files(
-            pattern='*vasprun.xml',
-            filepath=self.mainfile,
-            stripname=self.basename,
-            deep=False,
-        )
-        outcar_files = get_files(
-            pattern='*OUTCAR',
-            filepath=self.mainfile,
-            stripname=self.basename,
-            deep=False,
-        )
-        dft_files = []
-        if len(vasprun_files) == 0:
-            dft_files = outcar_files
-        elif len(outcar_files) == 0:
-            dft_files = vasprun_files
+        dft_files = self.workflow_dft_files(filename=self.mainfile)
         if len(dft_files) == 1:
             dft_path = dft_files[-1].split('raw/')[-1]
             filepath_stripped = self.filepath.split('raw/')[-1]
@@ -556,8 +556,28 @@ class Wannier90Parser(MatchingParser):
                         )
                         if dft_path == mainfile:
                             dft_archive = entry_archive
+
+                            # check if the simulation cell is the same
+                            dft_cell = dft_archive.m_xpath(
+                                'data.model_system[-1].cell[0]'
+                            )
+                            tb_cell = self.archive.m_xpath(
+                                'data.model_system[-1].cell[0]'
+                            )
+                            if dft_cell is not None and tb_cell is not None:
+                                if dft_cell != tb_cell:
+                                    logger.warning(
+                                        'The DFT and TB cells do not coincide. We might be connecting wrongly the DFT and TB tasks.'
+                                    )
+                            else:
+                                logger.warning(
+                                    'Could not resolve the DFT and TB cells.'
+                                )
+                                return
+
+                            # Parse the workflow information
                             dft_plus_tb_archive = self._child_archives.get(
-                                'DFT_plus_TB_workflow'
+                                'DFTPlusTB_workflow'
                             )
                             dft_plus_tb = parse_dft_plus_tb_workflow(
                                 dft_archive=dft_archive, tb_archive=self.archive
