@@ -28,7 +28,6 @@ nomad_parser_wannier90_plugin = SimulationParserEntryPoint(
     description='Entry point for the Wannier90 parser.',
     python_package='nomad_parser_wannier90.parsers',
     parser_class_name='nomad_parser_wannier90.parsers.parser.Wannier90Parser',
-    # parser_as_interface=False,  # in order to use `child_archives` and auto workflows
     level=1,
     mainfile_contents_re=r'\|\s*WANNIER90\s*\|',
 )

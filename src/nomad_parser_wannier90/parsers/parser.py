@@ -189,6 +189,8 @@ class Wannier90Parser:
             'Nband': 'n_bloch_bands',
         }
 
+        self._child_archives = {}
+
     def init_parser(self, logger: 'BoundLogger') -> None:
         """
         Initialize the `WOutParser` with the mainfile and logger.
@@ -530,7 +532,7 @@ class Wannier90Parser:
         dft_files = self.workflow_dft_files(filename=self.mainfile)
         if len(dft_files) == 1:
             dft_path = dft_files[-1].split('raw/')[-1]
-            filepath_stripped = self.filepath.split('raw/')[-1]
+            filepath_stripped = self.mainfile.split('raw/')[-1]
             try:
                 # For automatic workflows
                 from nomad.app.v1.models import MetadataRequired
