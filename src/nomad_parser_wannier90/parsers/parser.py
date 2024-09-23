@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 from nomad.datamodel import EntryArchive
 from nomad.parsing.file_parser import Quantity, TextParser
-from nomad.parsing.parser import MatchingParser
 from nomad.units import ureg
 from nomad_simulations.schema_packages.atoms_state import AtomsState
 
@@ -169,7 +168,7 @@ class WOutParser(TextParser):
         ]
 
 
-class Wannier90Parser(MatchingParser):
+class Wannier90Parser:
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.wout_parser = WOutParser()
