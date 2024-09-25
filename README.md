@@ -9,14 +9,18 @@ This is a plugin for [NOMAD](https://nomad-lab.eu) which contains the parser and
 
 ## Getting started
 
-`nomad-parser-wannier90` can be installed as a PyPI package using `pip`. We require features from the `nomad-lab` package which are not publicly available in PyPI, so an extra flag `--index-url` needs to be specified when pip installing this package:
+`nomad-parser-wannier90` can be installed as a PyPI package using `pip`:
+
+> [!WARNING]
+> Unfortunately, the current plugin mechanism is not supported by the latest nomad-lab version on PyPI and therefore an index url pointing to the NOMAD Gitlab registry needs to be added.
+
 ```sh
 pip install nomad-parser-wannier90 --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
 ```
 
 ## Development
 
-If you want to develop locally this package, clone the project and in the workspace folder, create a virtual environment (note this project uses Python 3.9):
+If you want to develop locally this package, clone the project and in the workspace folder, create a virtual environment (you can use Python 3.9, 3.10, or 3.11):
 ```sh
 git clone https://github.com/nomad-coe/nomad-parser-wannier90.git
 cd nomad-parser-wannier90
