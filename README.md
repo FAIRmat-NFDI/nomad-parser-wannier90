@@ -24,7 +24,7 @@ If you want to develop locally this package, clone the project and in the worksp
 ```sh
 git clone https://github.com/nomad-coe/nomad-parser-wannier90.git
 cd nomad-parser-wannier90
-python3.9 -m venv .pyenv
+python3.11 -m venv .pyenv
 . .pyenv/bin/activate
 ```
 
