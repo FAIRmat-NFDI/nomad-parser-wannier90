@@ -11,7 +11,7 @@ class Wannier90SchemaPackageEntryPoint(SchemaPackageEntryPoint):
         return m_package
 
 
-nomad_parser_wannier90_schema = Wannier90SchemaPackageEntryPoint(
+schema_package_entry_point = Wannier90SchemaPackageEntryPoint(
     name='Wannier90SchemaPackage',
     description='Entry point for the Wannier90 code-specific schema.',
 )

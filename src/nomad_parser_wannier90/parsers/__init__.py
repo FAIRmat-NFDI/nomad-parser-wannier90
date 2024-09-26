@@ -22,7 +22,7 @@ class SimulationParserEntryPoint(ParserEntryPoint):
         return MatchingParserInterface(**self.dict())
 
 
-nomad_parser_wannier90_plugin = SimulationParserEntryPoint(
+parser_entry_point = SimulationParserEntryPoint(
     name='parsers/wannier90',
     aliases=['parsers/wannier90'],
     description='Entry point for the Wannier90 parser.',

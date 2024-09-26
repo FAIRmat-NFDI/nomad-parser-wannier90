@@ -41,7 +41,7 @@ from nomad_parser_wannier90.parsers.win_parser import Wannier90WInParser
 re_n = r'[\n\r]'
 
 configuration = config.get_plugin_entry_point(
-    'nomad_parser_wannier90.parsers:nomad_parser_wannier90_plugin'
+    'nomad_parser_wannier90.parsers:parser_entry_point'
 )
 
 

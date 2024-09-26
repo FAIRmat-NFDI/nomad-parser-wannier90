@@ -131,8 +131,8 @@ where = ["src"]
 write_to = "src/nomad_parser_wannier90/_version.py"
 
 [project.entry-points.'nomad.plugin']
-nomad_parser_wannier90_plugin = "nomad_parser_wannier90.parsers:nomad_parser_wannier90_plugin"
-nomad_parser_wannier90_schema = "nomad_parser_wannier90.schema_packages:nomad_parser_wannier90_schema"
+nomad_parser_wannier90_plugin = "nomad_parser_wannier90.parsers:parser_entry_point"
+nomad_parser_wannier90_schema = "nomad_parser_wannier90.schema_packages:schema_package_entry_point"
 
 
 [tool.cruft]

@@ -152,8 +152,8 @@ Alternatively and only valid for your local NOMAD installation, you can modify `
 plugins:
   entry_points:
     include:
-      - ["nomad_parser_wannier90.parsers:nomad_parser_wannier90_plugin"]
-      - ["nomad_parser_wannier90.schema_packages:nomad_parser_wannier90_schema"]
+      - ["nomad_parser_wannier90.parsers:parser_entry_point"]
+      - ["nomad_parser_wannier90.schema_packages:schema_package_entry_point"]
 ```
 
 **Note!**
