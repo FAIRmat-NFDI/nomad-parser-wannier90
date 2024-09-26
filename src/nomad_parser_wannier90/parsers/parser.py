@@ -5,9 +5,9 @@ import numpy as np
 from nomad.config import config
 
 if TYPE_CHECKING:
+    from nomad.datamodel import EntryArchive
     from structlog.stdlib import BoundLogger
 
-from nomad.datamodel import EntryArchive
 from nomad.parsing.file_parser import Quantity, TextParser
 from nomad.units import ureg
 from nomad_simulations.schema_packages.atoms_state import AtomsState
@@ -478,7 +478,7 @@ class Wannier90Parser:
         return ['DFTPlusTB_workflow']
 
     def parse(
-        self, filepath: str, archive: EntryArchive, logger: 'BoundLogger'
+        self, filepath: str, archive: 'EntryArchive', logger: 'BoundLogger'
     ) -> None:
         self.mainfile = filepath
         self.maindir = os.path.dirname(self.mainfile)
