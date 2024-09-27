@@ -524,7 +524,10 @@ class Wannier90Parser:
 
         # Workflow section
         workflow = SinglePoint()
-        self.archive.workflow2 = workflow
+        workflow.normalize(archive=archive, logger=logger)
+        print('TB')
+        print(workflow)
+        archive.workflow2 = workflow
 
         # TODO extend to handle DFT+TB workflows using `self._dft_codes`
         # Checking if other mainfiles are present, if the closest is a DFT code, tries to create the
@@ -546,45 +549,44 @@ class Wannier90Parser:
                     required=MetadataRequired(include=['entry_id', 'mainfile']),
                 ).data
                 metadata = [[sid['entry_id'], sid['mainfile']] for sid in search_ids]
-                if len(metadata) > 1:
-                    for entry_id, mainfile in metadata:
-                        if (
-                            mainfile == filepath_stripped
-                        ):  # we skipped the current parsed mainfile
-                            continue
-                        entry_archive = self.archive.m_context.load_archive(
-                            entry_id, upload_id, None
+                for entry_id, mainfile in metadata:
+                    if (
+                        mainfile == filepath_stripped
+                    ):  # we skipped the current parsed mainfile
+                        continue
+                    entry_archive = self.archive.m_context.load_archive(
+                        entry_id, upload_id, None
+                    )
+                    if dft_path == mainfile:
+                        dft_archive = entry_archive
+
+                        # ! commented out for now, until VASP parser is ready
+                        # # check if the simulation cell is the same
+                        # dft_cell = dft_archive.m_xpath(
+                        #     'data.model_system[-1].cell[0]'
+                        # )
+                        # tb_cell = self.archive.m_xpath(
+                        #     'data.model_system[-1].cell[0]'
+                        # )
+                        # if dft_cell is not None and tb_cell is not None:
+                        #     if dft_cell != tb_cell:
+                        #         logger.warning(
+                        #             'The DFT and TB cells do not coincide. We might be connecting wrongly the DFT and TB tasks.'
+                        #         )
+                        # else:
+                        #     logger.warning(
+                        #         'Could not resolve the DFT and TB cells.'
+                        #     )
+                        #     return
+
+                        # Parse the workflow information
+                        dft_plus_tb_archive = self._child_archives.get(
+                            'DFTPlusTB_workflow'
                         )
-                        if dft_path == mainfile:
-                            dft_archive = entry_archive
-
-                            # ! commented out for now, until VASP parser is ready
-                            # # check if the simulation cell is the same
-                            # dft_cell = dft_archive.m_xpath(
-                            #     'data.model_system[-1].cell[0]'
-                            # )
-                            # tb_cell = self.archive.m_xpath(
-                            #     'data.model_system[-1].cell[0]'
-                            # )
-                            # if dft_cell is not None and tb_cell is not None:
-                            #     if dft_cell != tb_cell:
-                            #         logger.warning(
-                            #             'The DFT and TB cells do not coincide. We might be connecting wrongly the DFT and TB tasks.'
-                            #         )
-                            # else:
-                            #     logger.warning(
-                            #         'Could not resolve the DFT and TB cells.'
-                            #     )
-                            #     return
-
-                            # Parse the workflow information
-                            dft_plus_tb_archive = self._child_archives.get(
-                                'DFTPlusTB_workflow'
-                            )
-                            dft_plus_tb = parse_dft_plus_tb_workflow(
-                                dft_archive=dft_archive, tb_archive=self.archive
-                            )
-                            dft_plus_tb_archive.workflow2 = dft_plus_tb
-                            break
+                        dft_plus_tb = parse_dft_plus_tb_workflow(
+                            dft_archive=dft_archive, tb_archive=self.archive
+                        )
+                        dft_plus_tb_archive.workflow2 = dft_plus_tb
+                        break
             except Exception:
                 logger.warning('Could not resolve the DFT+TB workflow for Wannier90.')
