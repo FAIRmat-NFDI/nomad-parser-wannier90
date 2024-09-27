@@ -558,23 +558,24 @@ class Wannier90Parser:
                         if dft_path == mainfile:
                             dft_archive = entry_archive
 
-                            # check if the simulation cell is the same
-                            dft_cell = dft_archive.m_xpath(
-                                'data.model_system[-1].cell[0]'
-                            )
-                            tb_cell = self.archive.m_xpath(
-                                'data.model_system[-1].cell[0]'
-                            )
-                            if dft_cell is not None and tb_cell is not None:
-                                if dft_cell != tb_cell:
-                                    logger.warning(
-                                        'The DFT and TB cells do not coincide. We might be connecting wrongly the DFT and TB tasks.'
-                                    )
-                            else:
-                                logger.warning(
-                                    'Could not resolve the DFT and TB cells.'
-                                )
-                                return
+                            # ! commented out for now, until VASP parser is ready
+                            # # check if the simulation cell is the same
+                            # dft_cell = dft_archive.m_xpath(
+                            #     'data.model_system[-1].cell[0]'
+                            # )
+                            # tb_cell = self.archive.m_xpath(
+                            #     'data.model_system[-1].cell[0]'
+                            # )
+                            # if dft_cell is not None and tb_cell is not None:
+                            #     if dft_cell != tb_cell:
+                            #         logger.warning(
+                            #             'The DFT and TB cells do not coincide. We might be connecting wrongly the DFT and TB tasks.'
+                            #         )
+                            # else:
+                            #     logger.warning(
+                            #         'Could not resolve the DFT and TB cells.'
+                            #     )
+                            #     return
 
                             # Parse the workflow information
                             dft_plus_tb_archive = self._child_archives.get(
