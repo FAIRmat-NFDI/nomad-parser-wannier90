@@ -60,13 +60,11 @@ def parse_dft_plus_tb_workflow(
 
     dft_task = dft_archive.workflow2
     tb_task = tb_archive.workflow2
-    print(dft_task, tb_task, dft_task.inputs, tb_task.outputs)
-    print(dft_task.m_xpath('inputs'), dft_task.m_xpath('inputs', dict=False))
-    print(dft_task.m_xpath('inputs[0]'), dft_task.m_xpath('inputs[0]', dict=False))
-    print(tb_task.m_xpath('outputs'), dft_task.m_xpath('outputs', dict=False))
-    print(tb_task.m_xpath('outputs[-1]'), dft_task.m_xpath('outputs[-1]', dict=False))
-    dft_plus_tb.inputs = dft_task.m_xpath('inputs[0]', dict=False)
-    dft_plus_tb.outputs = tb_task.m_xpath('outputs[-1]', dict=False)
+
+    if not dft_task.m_xpath('inputs[0]') or not tb_task.m_xpath('outputs[-1]'):
+        return dft_plus_tb
+    dft_plus_tb.inputs = dft_task.inputs[0]
+    dft_plus_tb.outputs = tb_task.outputs[-1]
     dft_plus_tb.tasks = [
         TaskReference(task=dft_task),
         TaskReference(task=tb_task),

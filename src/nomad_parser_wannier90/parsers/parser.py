@@ -525,8 +525,6 @@ class Wannier90Parser:
         # Workflow section
         workflow = SinglePoint()
         workflow.normalize(archive=archive, logger=logger)
-        print('TB')
-        print(workflow)
         archive.workflow2 = workflow
 
         # TODO extend to handle DFT+TB workflows using `self._dft_codes`
