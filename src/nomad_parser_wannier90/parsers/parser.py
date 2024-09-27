@@ -14,19 +14,12 @@ from nomad_simulations.schema_packages.atoms_state import AtomsState
 
 # New schema
 from nomad_simulations.schema_packages.general import Program, Simulation
-from nomad_simulations.schema_packages.model_method import (
-    ModelMethod,
-)
-from nomad_simulations.schema_packages.model_method import (
-    Wannier as ModelWannier,
-)
+from nomad_simulations.schema_packages.model_method import ModelMethod, Wannier
 from nomad_simulations.schema_packages.model_system import AtomicCell, ModelSystem
 from nomad_simulations.schema_packages.numerical_settings import (
     KLinePath,
+    KMesh,
     KSpace,
-)
-from nomad_simulations.schema_packages.numerical_settings import (
-    KMesh as ModelKMesh,
 )
 from nomad_simulations.schema_packages.outputs import Outputs
 from nomad_simulations.schema_packages.workflow import SinglePoint
@@ -209,7 +202,7 @@ class Wannier90Parser:
             labels (Optional[list[str]]): List of chemical element labels.
 
         Returns:
-            (list[AtomsState]): List of `AtomsState` sections.
+            list[AtomsState]: List of `AtomsState` sections.
         """
         if labels is None:
             return []
@@ -223,7 +216,7 @@ class Wannier90Parser:
         Parse the `AtomicCell` from the `lattice_vectors` and `structure` regex quantities in `WOutParser`.
 
         Returns:
-            (AtomicCell): The parsed `AtomicCell` section.
+            AtomicCell: The parsed `AtomicCell` section.
         """
         atomic_cell = AtomicCell()
 
@@ -259,7 +252,7 @@ class Wannier90Parser:
             logger (BoundLogger): The logger to log messages.
 
         Returns:
-            (Optional[ModelSystem]): The parsed `ModelSystem` section.
+            Optional[ModelSystem]: The parsed `ModelSystem` section.
         """
         model_system = ModelSystem()
         model_system.is_representative = True
@@ -273,14 +266,14 @@ class Wannier90Parser:
         model_system.cell.append(atomic_cell)
         return model_system
 
-    def parse_wannier(self) -> ModelWannier:
+    def parse_wannier(self) -> Wannier:
         """
-        Parse the `ModelWannier` section from the `WOutParser` quantities.
+        Parse the `Wannier` section from the `WOutParser` quantities.
 
         Returns:
-            (ModelWannier): The parsed `ModelWannier` section.
+            Wannier: The parsed `Wannier` section.
         """
-        model_wannier = ModelWannier()
+        model_wannier = Wannier()
         for key in self._input_projection_mapping.keys():
             setattr(
                 model_wannier,
@@ -297,18 +290,18 @@ class Wannier90Parser:
         ).get('inner')
         return model_wannier
 
-    def parse_k_mesh(self) -> Optional[ModelKMesh]:
+    def parse_k_mesh(self) -> Optional[KMesh]:
         """
-        Parse the `ModelKMesh` section from the `WOutParser` quantities.
+        Parse the `KMesh` section from the `WOutParser` quantities.
 
         Returns:
-            (Optional[ModelKMesh]): The parsed `ModelKMesh` section.
+            Optional[KMesh]: The parsed `KMesh` section.
         """
         sec_k_mesh = None
         k_mesh = self.wout_parser.get('k_mesh')
         if k_mesh is None:
             return sec_k_mesh
-        sec_k_mesh = ModelKMesh()
+        sec_k_mesh = KMesh()
         sec_k_mesh.n_points = k_mesh.get('n_points')
         sec_k_mesh.grid = k_mesh.get('grid', [])
         if k_mesh.get('k_points') is not None:
@@ -320,7 +313,7 @@ class Wannier90Parser:
         Parse the `KLinePath` section from the `WOutParser` quantities.
 
         Returns:
-            (Optional[KLinePath]): The parsed `KLinePath` section.
+            Optional[KLinePath]: The parsed `KLinePath` section.
         """
         sec_k_line_path = None
         k_line_path = self.wout_parser.get('k_line_path')
@@ -350,7 +343,7 @@ class Wannier90Parser:
         Parse the `ModelWannier(ModelMethod)` section from the `WOutParser` quantities.
 
         Returns:
-            (ModelMethod): The parsed `ModelWannier(ModelMethod)` section.
+            ModelMethod: The parsed `ModelWannier(ModelMethod)` section.
         """
         # `ModelMethod` section
         model_wannier = self.parse_wannier()
