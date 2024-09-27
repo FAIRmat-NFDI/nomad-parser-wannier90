@@ -139,23 +139,6 @@ class Wannier90WInParser:
                 symbols.append(atomic_cell.atoms_state[index].chemical_symbol)
         return indices, symbols
 
-    def _get_f_information(
-        self, atom: str, atomic_cell: AtomicCell, units: str
-    ) -> tuple[list, list]:
-        position = [float(x) for x in atom.replace('f=', '').split(',')]
-        position = np.dot(position, atomic_cell.lattice_vectors.magnitude)
-        return self._convert_position(
-            position=position, atomic_cell=atomic_cell, units=units
-        )
-
-    def _get_c_information(
-        self, atom: str, atomic_cell: AtomicCell, units: str
-    ) -> tuple[list, list]:
-        position = [float(x) for x in atom.replace('c=', '').split(',')]
-        return self._convert_position(
-            position=position, atomic_cell=atomic_cell, units=units
-        )
-
     def get_branch_label_and_atom_indices(
         self,
         atom: Union[str, int],
@@ -183,12 +166,15 @@ class Wannier90WInParser:
         indices: list[int] = []
         # If the atom is not a chemical element, we use the `_convert_position` method resolution for it, joining the `symbols` into a long string
         if atom.startswith('f='):  # fractional coordinates
-            indices, symbols = self._get_f_information(
-                atom=atom, atomic_cell=atomic_cell, units=units
+            position = [float(x) for x in atom.replace('f=', '').split(',')]
+            position = np.dot(position, atomic_cell.lattice_vectors.magnitude)
+            indices, symbols = self._convert_position(
+                position=position, atomic_cell=atomic_cell, units=units
             )
         elif atom.startswith('c='):  # cartesian coordinates
-            indices, symbols = self._get_c_information(
-                atom=atom, atomic_cell=atomic_cell, units=units
+            position = [float(x) for x in atom.replace('c=', '').split(',')]
+            indices, symbols = self._convert_position(
+                position=position, atomic_cell=atomic_cell, units=units
             )
         # Otherwise, if the atom chemical symbol is directly specified, we store all the `atom_indices` coinciding with this label
         else:  # atom label directly specified
@@ -208,8 +194,6 @@ class Wannier90WInParser:
         projection: list[str],
         model_system_child: ModelSystem,
         atomic_cell: AtomicCell,
-        units: str,
-        logger: 'BoundLogger',
     ) -> None:
         """
         Populate the `OrbitalsState` sections for the AtomsState relevant for the Wannier projection.
@@ -225,22 +209,7 @@ class Wannier90WInParser:
         if isinstance(atom, int):
             return '', [atom]
 
-        # Initial check for the `atom` and their `indices`
-        indices: list[int] = []
-        if atom.startswith('f='):
-            indices, _ = self._get_f_information(
-                atom=atom, atomic_cell=atomic_cell, units=units
-            )
-        elif atom.startswith('c='):
-            indices, _ = self._get_c_information(
-                atom=atom, atomic_cell=atomic_cell, units=units
-            )
-        else:
-            indices = model_system_child.atom_indices
-        if not indices:
-            logger.warning('Could not extract the `AtomicCell.atoms_state` sections.')
-            return None
-
+        # Extracting orbitals information
         orbitals = projection[1].split(';')
         for atom_index in model_system_child.atom_indices:
             atom_state = atomic_cell.atoms_state[atom_index]
@@ -325,8 +294,6 @@ class Wannier90WInParser:
                 projection=projection,
                 model_system_child=model_system_child,
                 atomic_cell=atomic_cell,
-                logger=logger,
-                units=wannier90_units,
             )
             model_system_childs.append(model_system_child)
 
