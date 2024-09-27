@@ -161,7 +161,7 @@ class Wannier90WInParser:
         atom: Union[str, int],
         atomic_cell: AtomicCell,
         units: str,
-    ) -> tuple[Optional[str], list[int]]:
+    ) -> tuple[str, list]:
         """
         Gets the branch label and the atom indices for the child model system.
 
@@ -179,8 +179,8 @@ class Wannier90WInParser:
             return '', [atom]
 
         # 3 different cases to define in `win`
-        symbols = ''
-        indices = []
+        symbols: list[str] = []
+        indices: list[int] = []
         # If the atom is not a chemical element, we use the `_convert_position` method resolution for it, joining the `symbols` into a long string
         if atom.startswith('f='):  # fractional coordinates
             indices, symbols = self._get_f_information(
@@ -226,7 +226,7 @@ class Wannier90WInParser:
             return '', [atom]
 
         # Initial check for the `atom` and their `indices`
-        indices = []
+        indices: list[int] = []
         if atom.startswith('f='):
             indices, _ = self._get_f_information(
                 atom=atom, atomic_cell=atomic_cell, units=units

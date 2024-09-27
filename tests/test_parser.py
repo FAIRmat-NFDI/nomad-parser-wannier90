@@ -210,6 +210,7 @@ def test_minimal_Pt_Vikrant(parser):
     assert simulation.model_method[0].m_def.name == 'Wannier'
     wannier = simulation.model_method[0]
     assert wannier.is_maximally_localized
+    # 's', 'p', 'd' deg orbitals used for all 4 Pt -> 4 * 3 = 12 orbitals * 3 Pt atoms per unit cell = 36
     assert wannier.n_orbitals == 36
     assert wannier.n_bloch_bands == 240
     assert np.isclose(wannier.energy_window_inner.magnitude, [8.80301, 11.80301]).all()
