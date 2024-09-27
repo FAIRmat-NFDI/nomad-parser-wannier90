@@ -117,7 +117,7 @@ class Wannier90WInParser:
         self, position: list[float], atomic_cell: AtomicCell, units: str
     ) -> tuple[list, list]:
         """
-        Convert the atom `positions` in fractional or cartesian coordinates to the atom `chemical_symbols`.
+        Convert the atom `position` in fractional or cartesian coordinates to the atom `chemical_symbol`.
 
         Args:
             position (list[float]): The position in fractional or cartesian coordinates.
@@ -146,7 +146,7 @@ class Wannier90WInParser:
         units: str,
     ) -> tuple[str, list]:
         """
-        Gets the branch label and the atom indices for the child model system.
+        Get the branch label and the atom indices for the child model system.
 
         Args:
             atom (Union[str, int]): The atom string containing the positions information. In some older version,
