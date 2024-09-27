@@ -15,6 +15,10 @@ class SimulationParserEntryPoint(ParserEntryPoint):
         Order of execution of parser with respect to other parsers.
     """,
     )
+    equal_cell_positions_tolerance: float = Field(
+        1e-2,
+        description='Tolerance (in angstroms) for the cell positions to be considered equal.',
+    )
 
     def load(self):
         from nomad.parsing import MatchingParserInterface
