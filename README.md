@@ -20,7 +20,7 @@ pip install nomad-parser-wannier90 --index-url https://gitlab.mpcdf.mpg.de/api/v
 
 ## Development
 
-If you want to develop locally this package, clone the project and in the workspace folder, create a virtual environment (you can use Python 3.9, 3.10, or 3.11):
+If you want to develop locally this package, clone the project and in the workspace folder, create a virtual environment (you can use Python 3.9, 3.10, 3.11, or 3.12):
 ```sh
 git clone https://github.com/nomad-coe/nomad-parser-wannier90.git
 cd nomad-parser-wannier90
