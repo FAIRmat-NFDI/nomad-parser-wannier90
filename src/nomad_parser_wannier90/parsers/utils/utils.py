@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 import os
 from glob import glob
 
-from nomad.datamodel.metainfo.workflow_new import TaskReference
+from nomad.datamodel.metainfo.workflow_new import TaskReference2 as TaskReference
 from nomad_simulations.schema_packages.workflow import DFTPlusTB
 
 
@@ -57,7 +57,6 @@ def parse_dft_plus_tb_workflow(
 
     if not dft_archive.workflow2 or not tb_archive.workflow2:
         return
-    print(dft_archive.workflow2, tb_archive.workflow2)
 
     dft_task = dft_archive.workflow2
     tb_task = tb_archive.workflow2
