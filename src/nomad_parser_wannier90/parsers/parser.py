@@ -574,6 +574,7 @@ class Wannier90Parser:
                         dft_plus_tb_archive = self._child_archives.get(
                             'DFTPlusTB_workflow'
                         )
+                        print(dft_archive, self.archive)
                         dft_plus_tb = parse_dft_plus_tb_workflow(
                             dft_archive=dft_archive, tb_archive=self.archive
                         )

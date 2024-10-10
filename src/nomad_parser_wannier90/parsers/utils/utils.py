@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 import os
 from glob import glob
 
-from nomad.datamodel.metainfo.workflow import TaskReference
+from nomad.datamodel.metainfo.workflow_new import TaskReference
 from nomad_simulations.schema_packages.workflow import DFTPlusTB
 
 
@@ -57,6 +57,7 @@ def parse_dft_plus_tb_workflow(
 
     if not dft_archive.workflow2 or not tb_archive.workflow2:
         return
+    print(dft_archive.workflow2, tb_archive.workflow2)
 
     dft_task = dft_archive.workflow2
     tb_task = tb_archive.workflow2
@@ -66,9 +67,9 @@ def parse_dft_plus_tb_workflow(
     ]
 
     # Check if main input and output of the `DFTPlusTB` workflow exist
-    if not dft_task.m_xpath('inputs[0]') or not tb_task.m_xpath('outputs[-1]'):
-        return dft_plus_tb
-    dft_plus_tb.inputs = [dft_task.inputs[0]]
-    dft_plus_tb.outputs = [tb_task.outputs[-1]]
+    # if not dft_task.m_xpath('inputs[0]') or not tb_task.m_xpath('outputs[-1]'):
+    #     return dft_plus_tb
+    # dft_plus_tb.inputs = [dft_task.inputs[0]]
+    # dft_plus_tb.outputs = [tb_task.outputs[-1]]
 
     return dft_plus_tb
