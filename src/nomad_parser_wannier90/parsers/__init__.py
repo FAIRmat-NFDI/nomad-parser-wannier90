@@ -2,18 +2,36 @@ from nomad.config.models.plugins import ParserEntryPoint
 from pydantic import Field
 
 
-class Wannier90ParserEntryPoint(ParserEntryPoint):
-    parameter: int = Field(0, description='Custom configuration parameter')
+class SimulationParserEntryPoint(ParserEntryPoint):
+    parser_class_name: str = Field(
+        description="""
+        The fully qualified name of the Python class that implements the parser.
+        This class must have a function `def parse(self, mainfile, archive, logger)`.
+    """
+    )
+    level: int = Field(
+        0,
+        description="""
+        Order of execution of parser with respect to other parsers.
+    """,
+    )
+    equal_cell_positions_tolerance: float = Field(
+        1e-2,
+        description='Tolerance (in angstroms) for the cell positions to be considered equal.',
+    )
 
     def load(self):
-        from nomad_parser_wannier90.parsers.parser import Wannier90Parser
+        from nomad.parsing import MatchingParserInterface
 
-        return Wannier90Parser(**self.dict())
+        return MatchingParserInterface(**self.dict())
 
 
-nomad_parser_wannier90_plugin = Wannier90ParserEntryPoint(
-    name='Wannier90ParserEntryPoint',
+parser_entry_point = SimulationParserEntryPoint(
+    name='parsers/wannier90',
+    aliases=['parsers/wannier90'],
     description='Entry point for the Wannier90 parser.',
+    python_package='nomad_parser_wannier90.parsers',
+    parser_class_name='nomad_parser_wannier90.parsers.parser.Wannier90Parser',
     level=1,
     mainfile_contents_re=r'\|\s*WANNIER90\s*\|',
 )
