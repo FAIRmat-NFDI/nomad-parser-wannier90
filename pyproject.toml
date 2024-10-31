@@ -26,8 +26,8 @@ maintainers = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-    "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@6b7149a71b2999abbb2225fcb67a5acafc811806",
-    "nomad-simulations@git+https://github.com/nomad-coe/nomad-simulations.git@f337b734126bc9cfe824f40993cda46e35f7f1eb",
+    #"nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@ea0e5cbc632a514ea4d7e0bca1fab105d452f94c",
+    #"nomad-simulations@git+https://github.com/nomad-coe/nomad-simulations.git@6a7668bcda0c074f8696eddccf326973acff41ac",
 ]
 
 [project.urls]

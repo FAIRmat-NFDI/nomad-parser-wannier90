@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 import os
 from glob import glob
 
-from nomad.datamodel.metainfo.workflow_new import TaskReference2 as TaskReference
+# from nomad.datamodel.metainfo.workflow_new import TaskReference2 as TaskReference
 from nomad_simulations.schema_packages.workflow import DFTPlusTB
 
 
