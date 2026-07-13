@@ -16,4 +16,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils import get_files
+from .utils import get_files, parse_dft_plus_tb_workflow
